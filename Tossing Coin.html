@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Coin Toss Game</title>
+    <style>
+        /* Modern, clean layout */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .game-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            text-align: center;
+            width: 350px;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #333;
+            font-size: 1.8rem;
+        }
+
+        /* 3D Coin Wrapper */
+        .coin-wrapper {
+            perspective: 1000px; /* Gives the 3D depth effect */
+            width: 150px;
+            height: 150px;
+            margin: 2rem auto;
+        }
+
+        /* The actual Coin container */
+        .coin {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 2s ease-out; /* Smooth transition when animation finishes */
+        }
+
+        /* Common styles for both faces of the coin */
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4rem;
+            backface-visibility: hidden; /* Hides the reverse side when flipped */
+            border: 4px solid #d4af37;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2), 0 4px 10px rgba(0,0,0,0.15);
+        }
+
+        .heads {
+            background: linear-gradient(135deg, #ffe066, #f5c116);
+            color: #5c4300;
+        }
+
+        .tails {
+            background: linear-gradient(135deg, #f5c116, #ffe066);
+            color: #5c4300;
+            transform: rotateY(180deg); /* Starts facing backwards */
+        }
+
+        /* Controls and Scoreboard */
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(0,123,255,0.2);
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .scoreboard {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1.5rem;
+            font-weight: bold;
+            color: #555;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+
+        /* CSS Animation Keyframes for the dramatic spin */
+        @keyframes spin-heads {
+            0% { transform: rotateY(0); }
+            100% { transform: rotateY(1800deg); } /* Flips 5 full times and lands on Heads (0/360) */
+        }
+
+        @keyframes spin-tails {
+            0% { transform: rotateY(0); }
+            100% { transform: rotateY(1980deg); } /* Flips 5.5 times and lands on Tails (180) */
+        }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>3D Coin Toss</h1>
+    
+    <div class="coin-wrapper">
+        <div class="coin" id="coin">
+            <div class="face heads">🪙</div>
+            <div class="face tails">👑</div>
+        </div>
+    </div>
+
+    <button id="toss-btn" onclick="tossCoin()">Flip Coin</button>
+
+    <div class="scoreboard">
+        <div>Heads: <span id="heads-count">0</span></div>
+        <div>Tails: <span id="tails-count">0</span></div>
+    </div>
+</div>
+
+<script>
+    let headsScore = 0;
+    let tailsScore = 0;
+    
+    const coin = document.getElementById('coin');
+    const tossBtn = document.getElementById('toss-btn');
+    const headsCount = document.getElementById('heads-count');
+    const tailsCount = document.getElementById('tails-count');
+
+    function tossCoin() {
+        // Disable button during animation so user can't spam clicks
+        tossBtn.disabled = true;
+
+        // Reset any previous animation styling
+        coin.style.animation = 'none';
+        
+        // Force a reflow/repaint in the browser to allow restarting the animation
+        void coin.offsetWidth; 
+
+        // 50/50 chance generator
+        const isHeads = Math.random() < 0.5;
+
+        if (isHeads) {
+            // Apply the spinning animation that ends on Heads
+            coin.style.animation = 'spin-heads 2s forwards';
+            setTimeout(() => {
+                headsScore++;
+                headsCount.innerText = headsScore;
+                tossBtn.disabled = false; // Re-enable button
+            }, 2000); // 2000ms matches the 2s animation duration
+        } else {
+            // Apply the spinning animation that ends on Tails
+            coin.style.animation = 'spin-tails 2s forwards';
+            setTimeout(() => {
+                tailsScore++;
+                tailsCount.innerText = tailsScore;
+                tossBtn.disabled = false; 
+            }, 2000);
+        }
+    }
+</script>
+
+</body>
+</html>
